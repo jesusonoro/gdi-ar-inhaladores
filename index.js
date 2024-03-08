@@ -8,7 +8,7 @@ import { MindARThree } from "mindar-image-three";
 // Scene Init
 const mindarThree = new MindARThree({
   container: document.querySelector("#container"),
-  imageTargetSrc: "/target.mind",
+  imageTargetSrc: "target/target.mind",
 });
 const { renderer, scene, camera } = mindarThree;
 const anchor = mindarThree.addAnchor(0);
@@ -63,17 +63,19 @@ const loadModel = (_model) => {
 
       // Materials fix
       object.children.forEach((_child, i) => {
-        if (_child.type === "Object3D" && i === 3) {
+        if (_child.type === "Object3D" &&( _child.name==="Top" || _child.name ==="Lateral")) {
           console.log("Object3D", _child);
           _child.children.forEach((_oChild) => {
             if (_oChild.type === "Group") {
               _oChild.children.forEach((_mesh) => {
                 console.log("mesh", _mesh);
                 _mesh.material = new THREE.MeshBasicMaterial({
-                  color: 0xffffff,
+                  side: THREE.DoubleSide
                 });
-                _mesh.material.side = THREE.DoubleSide;
               });
+            }
+            else {
+
             }
           });
         } else {
