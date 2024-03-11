@@ -16,6 +16,10 @@
     <style>
       body {
         margin: 0;
+        font-family: "Courier New", Courier, monospace;
+      }
+      button {
+        font-family: "Courier New", Courier, monospace;
       }
       #container {
         width: 100vw;
@@ -29,9 +33,56 @@
         left: 0;
         z-index: 2;
       }
+      #uicontrols {
+        position: fixed;
+        bottom: 1.5rem;
+        width: 100%;
+        z-index: 1000;
+      }
+      #uicontrols button {
+        border: none;
+        background-color: rgba(255, 255, 255, 0.8);
+        width: 100%;
+        padding: 1rem;
+      }
+      #buttons1,
+      #buttons2 {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 50% 50%;
+        grid-gap: 0.1rem;
+      }
+      #buttons2 button:last-of-type {
+        grid-column: span 2;
+      }
+      #statusText {
+        width: 100%;
+        background-color: white;
+        padding: 0.6rem;
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+      .hidden {
+        display: none !important;
+      }
     </style>
   </head>
   <body>
+    <video id="video" src="./video 1.mp4" class="hidden"></video>
     <div id="container"></div>
+    <div id="uicontrols">
+      <p id="statusText">Mira el flyer con tu cámara.</p>
+      <div id="buttons1">
+        <button id="iprasyntBtn">Iprasynt</button>
+        <button id="sacrusyntBtn">Sacrusynt</button>
+        <button id="eclosynt250Btn">Eclosynt 250</button>
+        <button id="eclosyntNasBtn">Eclosynt-Nas</button>
+      </div>
+      <div id="buttons2" class="hidden">
+        <button id="zoomBtn">Acercar</button>
+        <button id="rotateBtn">Rotar</button>
+        <button id="backBtn">Atrás</button>
+      </div>
+    </div>
   </body>
 </html>
