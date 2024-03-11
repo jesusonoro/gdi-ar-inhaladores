@@ -66,6 +66,10 @@ window.addEventListener("click", () => {
     video.load();
     video.play();
     playingVideo = true;
+
+    setTimeout(() => {
+      playingVideo = false;
+    }, 36000)
   }
 });
 
