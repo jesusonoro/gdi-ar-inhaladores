@@ -32,11 +32,16 @@ rotateBtn.addEventListener("click", () => {
   rotateSelection();
 });
 backBtn.addEventListener("click", () => {
-  if (selection !== null) selectionZoomOut();
+  if (selection !== null) {
+    selectionZoomOut();
+    if(models) {
+      models[selection].playing = false;
+    }
+  }
   if (targetFound) {
     statusText.innerText = "Selecciona un producto";
   } else {
-    statusText.innerText = "Mira el flyer con tu cámara";
+    statusText.innerText = "Mira el backing con tu cámara";
   }
   buttons1.classList.remove("hidden");
   buttons2.classList.add("hidden");
@@ -109,7 +114,7 @@ const models = [
   {
     i: 1,
     name: "Sacrusynt",
-    path: "models/sacrusynt.glb",
+    path: "models/sacrusynt_2.glb",
     position: new THREE.Vector3(-0.1, -0.25, 0.05),
     mixer: null,
     playing: false,
@@ -123,7 +128,7 @@ const models = [
   {
     i: 2,
     name: "Eclosynt 250",
-    path: "models/eclosynt250.glb",
+    path: "models/eclosynt250_2.glb",
     position: new THREE.Vector3(0.1, -0.25, 0.05),
     mixer: null,
     playing: false,
@@ -137,7 +142,7 @@ const models = [
   {
     i: 3,
     name: "Eclosynt-Nas",
-    path: "models/eclosyntNas.glb",
+    path: "models/eclosyntNas_2.glb",
     position: new THREE.Vector3(0.3, -0.25, 0.05),
     mixer: null,
     playing: false,
@@ -152,6 +157,20 @@ const models = [
 
 const clickSelection = (i) => {
   selection = i;
+  if(models) {
+    gsap.to(models[i].object.scale, {
+      x: 0.3,
+      duration: 1
+    });
+    gsap.to(models[i].object.scale, {
+      y: 0.3,
+      duration: 1
+    });
+    gsap.to(models[i].object.scale, {
+      z: 0.3,
+      duration: 1
+    });
+  }
   console.log(`Click ${models[i].name}`);
   buttons1.classList.add("hidden");
   buttons2.classList.remove("hidden");
@@ -307,7 +326,7 @@ const start = async () => {
 
     // Models animation
     if (modelsReady === 4) {
-      models.forEach((_model) => {
+      models.forEach((_model, i) => {
         if (_model.playing) {
           _model.mixer.update(clock.getDelta());
         }
@@ -320,7 +339,7 @@ const start = async () => {
       }
     } else {
       if (!anchor.visible) {
-        statusText.innerText = "Mira el backing con tu cámara.";
+        statusText.innerText = "Mira el backing con tu cámara";
         targetFound = false;
       }
     }
