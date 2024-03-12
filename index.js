@@ -1,10 +1,10 @@
 // UI Controls
 var targetFound = false;
 var selection = null;
+var zoomedIn = false;
 var selectionZoomIn = null;
 var selectionZoomOut = null;
-var selectionRotate = null;
-var selectionStopRotating = null;
+var rotateSelection = null;
 
 const statusText = document.getElementById("statusText");
 
@@ -15,17 +15,24 @@ const eclosynt250Btn = document.getElementById("eclosynt250Btn");
 const eclosyntNasBtn = document.getElementById("eclosyntNasBtn");
 
 const buttons2 = document.getElementById("buttons2");
+const zoomBtn = document.getElementById("zoomBtn");
+const rotateBtn = document.getElementById("rotateBtn");
 const backBtn = document.getElementById("backBtn");
 
-const clickSelection = (_inhName) => {
-  selection = _inhName;
-  console.log(`Click ${_inhName}`);
-  buttons1.classList.add("hidden");
-  buttons2.classList.remove("hidden");
-  statusText.innerText = _inhName;
-};
-
+zoomBtn.addEventListener("click", () => {
+  if (!zoomedIn) {
+    selectionZoomIn();
+    zoomedIn = true;
+  } else {
+    selectionZoomOut();
+    zoomedIn = false;
+  }
+});
+rotateBtn.addEventListener("click", () => {
+  rotateSelection();
+});
 backBtn.addEventListener("click", () => {
+  if (selection !== null) selectionZoomOut();
   if (targetFound) {
     statusText.innerText = "Selecciona un producto";
   } else {
@@ -41,6 +48,7 @@ backBtn.addEventListener("click", () => {
 import * as THREE from "three";
 import { GLTFLoader } from "GLTFLoader";
 import { MindARThree } from "mindar-image-three";
+import { gsap } from "gsap";
 
 // Scene Init
 const mindarThree = new MindARThree({
@@ -62,14 +70,15 @@ texture.crossOrigin = "anonymous";
 
 var playingVideo = false;
 window.addEventListener("click", () => {
-  if (!playingVideo) {
+  if (!playingVideo && targetFound) {
     video.load();
     video.play();
     playingVideo = true;
 
+    statusText.innerText = "Selecciona un producto";
     setTimeout(() => {
       playingVideo = false;
-    }, 36000)
+    }, 36000);
   }
 });
 
@@ -81,11 +90,11 @@ const plane = new THREE.Mesh(
 // 3D Scene
 
 // Load
-let mixer;
 let modelsReady = 0;
 
 const models = [
   {
+    i: 0,
     name: "Iprasynt",
     path: "models/iprasynt_2.glb",
     position: new THREE.Vector3(-0.3, -0.25, 0.05),
@@ -99,6 +108,7 @@ const models = [
     stopRotation: null,
   },
   {
+    i: 1,
     name: "Sacrusynt",
     path: "models/sacrusynt.glb",
     position: new THREE.Vector3(-0.1, -0.25, 0.05),
@@ -112,6 +122,7 @@ const models = [
     stopRotation: null,
   },
   {
+    i: 2,
     name: "Eclosynt 250",
     path: "models/eclosynt250.glb",
     position: new THREE.Vector3(0.1, -0.25, 0.05),
@@ -125,6 +136,7 @@ const models = [
     stopRotation: null,
   },
   {
+    i: 3,
     name: "Eclosynt-Nas",
     path: "models/eclosyntNas.glb",
     position: new THREE.Vector3(0.3, -0.25, 0.05),
@@ -138,6 +150,50 @@ const models = [
     stopRotation: null,
   },
 ];
+
+const clickSelection = (i) => {
+  selection = i;
+  console.log(`Click ${models[i].name}`);
+  buttons1.classList.add("hidden");
+  buttons2.classList.remove("hidden");
+  statusText.innerText = models[i].name;
+};
+selectionZoomIn = () => {
+  zoomBtn.innerText = "Alejar";
+  gsap.to(models[selection].object.scale, {
+    x: 1,
+    duration: 1,
+  });
+  gsap.to(models[selection].object.scale, {
+    y: 1,
+    duration: 1,
+  });
+  gsap.to(models[selection].object.scale, {
+    z: 1,
+    duration: 1,
+  });
+};
+selectionZoomOut = () => {
+  zoomBtn.innerText = "Acercar";
+  gsap.to(models[selection].object.scale, {
+    x: 0.2,
+    duration: 1,
+  });
+  gsap.to(models[selection].object.scale, {
+    y: 0.2,
+    duration: 1,
+  });
+  gsap.to(models[selection].object.scale, {
+    z: 0.2,
+    duration: 1,
+  });
+};
+rotateSelection = () => {
+  gsap.to(models[selection].object.rotation, {
+    y: models[selection].object.rotation.y + Math.PI * 2,
+    duration: 10,
+  });
+};
 
 // GLTF Init
 const gltfLoader = new GLTFLoader();
@@ -184,12 +240,13 @@ const loadModel = (_model) => {
         // Model Button Click
         _model.button.addEventListener("click", () => {
           // UI status update
-          clickSelection(_model.name);
+          clickSelection(_model.i);
 
           // Play animation
           animations.forEach((clip) => {
             const action = _model.mixer.clipAction(clip);
-            // action.clampWhenFinished = true;
+            action.clampWhenFinished = true;
+            action.loop = THREE.LoopOnce;
             action.play();
           });
 
@@ -206,13 +263,6 @@ const loadModel = (_model) => {
       );
       _model.object.scale.set(0.2, 0.2, 0.2);
 
-      _model.zoomIn = () => {
-        gsap.to(_model.object, {
-          scale: new THREE.Vector3(1, 1, 1),
-          duration: 1,
-        });
-      };
-
       anchor.group.add(_model.object);
 
       // Ready
@@ -221,7 +271,7 @@ const loadModel = (_model) => {
       console.log("");
     },
     (xhr) => {
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      // console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
     },
     (error) => {
       console.log(error);
