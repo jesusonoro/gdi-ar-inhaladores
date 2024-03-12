@@ -34,7 +34,7 @@ rotateBtn.addEventListener("click", () => {
 backBtn.addEventListener("click", () => {
   if (selection !== null) {
     selectionZoomOut();
-    if(models) {
+    if (models) {
       models[selection].playing = false;
     }
   }
@@ -59,6 +59,8 @@ import { gsap } from "gsap";
 const mindarThree = new MindARThree({
   container: document.querySelector("#container"),
   imageTargetSrc: "target/target.mind",
+  filterMinCF: 0.0001,
+  filterBeta: 0.003,
 });
 const { renderer, scene, camera } = mindarThree;
 const anchor = mindarThree.addAnchor(0);
@@ -94,6 +96,7 @@ const geometry = new THREE.PlaneGeometry(0.55 * 1.4, 1 * 1.4);
 // 3D Scene
 
 // Load
+
 let modelsReady = 0;
 
 const models = [
@@ -157,18 +160,18 @@ const models = [
 
 const clickSelection = (i) => {
   selection = i;
-  if(models) {
+  if (models) {
     gsap.to(models[i].object.scale, {
       x: 0.3,
-      duration: 1
+      duration: 1,
     });
     gsap.to(models[i].object.scale, {
       y: 0.3,
-      duration: 1
+      duration: 1,
     });
     gsap.to(models[i].object.scale, {
       z: 0.3,
-      duration: 1
+      duration: 1,
     });
   }
   console.log(`Click ${models[i].name}`);
@@ -263,6 +266,22 @@ const loadModel = (_model) => {
       if (_model.object && animations && animations.length) {
         _model.mixer = new THREE.AnimationMixer(object);
 
+        // Play animations
+        animations.forEach((clip) => {
+          const action = _model.mixer.clipAction(clip);
+          action.clampWhenFinished = true;
+          action.loop = THREE.LoopOnce;
+          action.play();
+        });
+        _model.mixer.update(0.001);
+        // Stop animations
+        animations.forEach((clip) => {
+          const action = _model.mixer.clipAction(clip);
+          action.clampWhenFinished = true;
+          action.loop = THREE.LoopOnce;
+          action.stop();
+        });
+
         // Model Button Click
         _model.button.addEventListener("click", () => {
           // UI status update
@@ -293,8 +312,6 @@ const loadModel = (_model) => {
 
       // Ready
       modelsReady += 1;
-      console.log("");
-      console.log("");
     },
     (xhr) => {
       // console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
