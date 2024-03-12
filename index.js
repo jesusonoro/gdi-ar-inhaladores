@@ -60,32 +60,31 @@ const anchor = mindarThree.addAnchor(0);
 
 // Test 3D Scene
 const geometry = new THREE.PlaneGeometry(0.55 * 1.4, 1 * 1.4);
-var video = document.getElementById("video");
-var texture = new THREE.VideoTexture(video);
-texture.needsUpdate;
-texture.minFilter = THREE.LinearFilter;
-texture.magFilter = THREE.LinearFilter;
-texture.format = THREE.RGBAFormat;
-texture.crossOrigin = "anonymous";
+// var video = document.getElementById("video");
+// var texture = new THREE.VideoTexture(video);
+// texture.needsUpdate;
+// texture.minFilter = THREE.LinearFilter;
+// texture.magFilter = THREE.LinearFilter;
+// texture.format = THREE.RGBAFormat;
+// texture.crossOrigin = "anonymous";
 
-var playingVideo = false;
-window.addEventListener("click", () => {
-  if (!playingVideo && targetFound) {
-    video.load();
-    video.play();
-    playingVideo = true;
+// var playingVideo = false;
+// window.addEventListener("click", () => {
+//   if (!playingVideo && targetFound) {
+//     video.load();
+//     video.play();
+//     playingVideo = true;
 
-    statusText.innerText = "Selecciona un producto";
-    setTimeout(() => {
-      playingVideo = false;
-    }, 36000);
-  }
-});
-
-const plane = new THREE.Mesh(
-  geometry,
-  new THREE.MeshBasicMaterial({ map: texture })
-);
+//     statusText.innerText = "Selecciona un producto";
+//     setTimeout(() => {
+//       playingVideo = false;
+//     }, 36000);
+//   }
+// });
+// const plane = new THREE.Mesh(
+//   geometry,
+//   new THREE.MeshBasicMaterial({ map: texture })
+// );
 
 // 3D Scene
 
@@ -161,15 +160,19 @@ const clickSelection = (i) => {
 selectionZoomIn = () => {
   zoomBtn.innerText = "Alejar";
   gsap.to(models[selection].object.scale, {
-    x: 1,
+    x: 0.6,
     duration: 1,
   });
   gsap.to(models[selection].object.scale, {
-    y: 1,
+    y: 0.6,
     duration: 1,
   });
   gsap.to(models[selection].object.scale, {
-    z: 1,
+    z: 0.6,
+    duration: 1,
+  });
+  gsap.to(models[selection].object.position, {
+    z: 0.5,
     duration: 1,
   });
 };
@@ -185,6 +188,10 @@ selectionZoomOut = () => {
   });
   gsap.to(models[selection].object.scale, {
     z: 0.2,
+    duration: 1,
+  });
+  gsap.to(models[selection].object.position, {
+    z: 0.05,
     duration: 1,
   });
 };
@@ -290,7 +297,7 @@ models.forEach((_model) => {
 });
 
 // Add 3D to anchor
-anchor.group.add(plane);
+// anchor.group.add(plane);
 
 const clock = new THREE.Clock();
 const start = async () => {
@@ -308,12 +315,12 @@ const start = async () => {
     }
     if (!targetFound) {
       if (anchor.visible) {
-        statusText.innerText = "Da click a la pantalla para ver el video";
+        statusText.innerText = "Selecciona un inhalador";
         targetFound = true;
       }
     } else {
       if (!anchor.visible) {
-        statusText.innerText = "Mira el flyer con tu cámara.";
+        statusText.innerText = "Mira el backing con tu cámara.";
         targetFound = false;
       }
     }
