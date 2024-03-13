@@ -40,20 +40,23 @@ window.addEventListener("click", () => {
     if (models) {
       const showAndClose = (_model, _start, _end) => {
         setTimeout(() => {
+          _model.play();
+          _model.playing = true;
           gsap.to(_model.object.scale, {
-            x: 1,
+            x: 0.6,
             duration: 1,
           });
           gsap.to(_model.object.scale, {
-            y: 1,
+            y: 0.6,
             duration: 1,
           });
           gsap.to(_model.object.scale, {
-            z: 1,
+            z: 0.6,
             duration: 1,
           });
         }, _start);
         setTimeout(() => {
+          _model.playing = false;
           gsap.to(_model.object.scale, {
             x: 0,
             duration: 1,
@@ -70,8 +73,8 @@ window.addEventListener("click", () => {
       };
       showAndClose(models[0], 9000, 14000);
       showAndClose(models[1], 14000, 19000);
-      showAndClose(models[2], 19000, 26000);
-      showAndClose(models[3], 26000, 32000);
+      showAndClose(models[2], 19000, 24000);
+      showAndClose(models[3], 24000, 32000);
     }
 
     playingVideo = true;
@@ -96,9 +99,10 @@ const models = [
     i: 0,
     name: "Iprasynt",
     path: "../models/iprasynt_2.glb",
-    position: new THREE.Vector3(0, -0.25, 0.5),
+    position: new THREE.Vector3(0.1, -1, 0.2),
     mixer: null,
     playing: false,
+    play: null,
     object: null,
     zoomIn: null,
     zoomOut: null,
@@ -109,9 +113,10 @@ const models = [
     i: 1,
     name: "Sacrusynt",
     path: "../models/sacrusynt_2.glb",
-    position: new THREE.Vector3(0, -0.25, 0.5),
+    position: new THREE.Vector3(0.1, -1, 0.2),
     mixer: null,
     playing: false,
+    play: null,
     object: null,
     zoomIn: null,
     zoomOut: null,
@@ -122,9 +127,10 @@ const models = [
     i: 2,
     name: "Eclosynt 250",
     path: "../models/eclosynt250_2.glb",
-    position: new THREE.Vector3(0, -0.25, 0.5),
+    position: new THREE.Vector3(0.1, -1, 0.2),
     mixer: null,
     playing: false,
+    play: null,
     object: null,
     zoomIn: null,
     zoomOut: null,
@@ -135,9 +141,10 @@ const models = [
     i: 3,
     name: "Eclosynt-Nas",
     path: "../models/eclosyntNas_2.glb",
-    position: new THREE.Vector3(0, -0.25, 0.5),
+    position: new THREE.Vector3(0.1, -1, 0.2),
     mixer: null,
     playing: false,
+    play: null,
     object: null,
     zoomIn: null,
     zoomOut: null,
@@ -161,6 +168,15 @@ const loadModel = (_model) => {
       const animations = gltf.animations;
       if (_model.object && animations && animations.length) {
         _model.mixer = new THREE.AnimationMixer(object);
+
+        _model.play = () => {
+          animations.forEach((clip) => {
+            const action = _model.mixer.clipAction(clip);
+            action.clampWhenFinished = true;
+            action.loop = THREE.LoopOnce;
+            action.play();
+          });
+        };
       }
 
       // Positioning
@@ -194,10 +210,21 @@ models.forEach((_model) => {
 const environmentLight = new THREE.AmbientLight("#FFFFFF", 3);
 scene.add(environmentLight);
 
+const clock = new THREE.Clock();
 const start = async () => {
   await backingMindarThree.start();
   renderer.setAnimationLoop(() => {
     renderer.render(scene, camera);
+
+    // Models animation
+    if (modelsReady === 4) {
+      models.forEach((_model, i) => {
+        if (_model.playing) {
+          _model.mixer.update(clock.getDelta());
+        }
+      });
+    }
+
     if (!backingTargetFound) {
       if (backingAnchor.visible) {
         statusText.innerText = "Da click a la pantalla para ver el video";
