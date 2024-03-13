@@ -72,9 +72,9 @@ window.addEventListener("click", () => {
         }, _end);
       };
       showAndClose(models[0], 9000, 14000);
-      showAndClose(models[1], 14000, 19000);
-      showAndClose(models[2], 19000, 24000);
-      showAndClose(models[3], 24000, 32000);
+      showAndClose(models[1], 14000, 19500);
+      showAndClose(models[2], 19500, 25000);
+      showAndClose(models[3], 25000, 31000);
     }
 
     playingVideo = true;
