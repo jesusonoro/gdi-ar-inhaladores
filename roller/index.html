@@ -8,7 +8,7 @@
           "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
           "GLTFLoader": "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader",
           "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js",
-          "gsap": "./gsap/index.js"
+          "gsap": "../gsap/index.js"
         }
       }
     </script>
@@ -83,24 +83,14 @@
     </style>
   </head>
   <body>
+    <video id="video" src="./video/video 1.mp4" class="hidden"></video>
     <div id="container"></div>
     <div id="topMenu">
-      <a href="/"><button>Backing</button></a>
+      <a href="/" class="light"><button>Backing</button></a>
       <a href="/roller"><button>Roller</button></a>
     </div>
     <div id="uicontrols">
-      <p id="statusText">Mira el backing con tu cámara</p>
-      <div id="buttons1">
-        <button id="iprasyntBtn">Iprasynt</button>
-        <button id="sacrusyntBtn">Sacrusynt</button>
-        <button id="eclosynt250Btn">Eclosynt 250</button>
-        <button id="eclosyntNasBtn">Eclosynt-Nas</button>
-      </div>
-      <div id="buttons2" class="hidden">
-        <button id="zoomBtn">Acercar</button>
-        <button id="rotateBtn">Rotar</button>
-        <button id="backBtn">Atrás</button>
-      </div>
+      <p id="statusText">Mira el roller con tu cámara</p>
     </div>
   </body>
 </html>

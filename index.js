@@ -1,5 +1,11 @@
+// Imports
+import * as THREE from "three";
+import { GLTFLoader } from "GLTFLoader";
+import { MindARThree } from "mindar-image-three";
+import { gsap } from "gsap";
+
 // UI Controls
-var targetFound = false;
+var backingTargetFound = false;
 var selection = null;
 var zoomedIn = false;
 var selectionZoomIn = null;
@@ -34,11 +40,12 @@ rotateBtn.addEventListener("click", () => {
 backBtn.addEventListener("click", () => {
   if (selection !== null) {
     selectionZoomOut();
+    zoomedIn = false;
     if (models) {
       models[selection].playing = false;
     }
   }
-  if (targetFound) {
+  if (backingTargetFound) {
     statusText.innerText = "Selecciona un producto";
   } else {
     statusText.innerText = "Mira el backing con tu cámara";
@@ -49,49 +56,18 @@ backBtn.addEventListener("click", () => {
 
 // ThreeJS + MindAR
 
-// Imports
-import * as THREE from "three";
-import { GLTFLoader } from "GLTFLoader";
-import { MindARThree } from "mindar-image-three";
-import { gsap } from "gsap";
-
 // Scene Init
-const mindarThree = new MindARThree({
+
+// Backing
+const backingMindarThree = new MindARThree({
   container: document.querySelector("#container"),
-  imageTargetSrc: "target/target.mind",
+  imageTargetSrc: "target/backing.mind",
   filterMinCF: 0.0001,
   filterBeta: 0.003,
 });
-const { renderer, scene, camera } = mindarThree;
-const anchor = mindarThree.addAnchor(0);
-
-// Test 3D Scene
-const geometry = new THREE.PlaneGeometry(0.55 * 1.4, 1 * 1.4);
-// var video = document.getElementById("video");
-// var texture = new THREE.VideoTexture(video);
-// texture.needsUpdate;
-// texture.minFilter = THREE.LinearFilter;
-// texture.magFilter = THREE.LinearFilter;
-// texture.format = THREE.RGBAFormat;
-// texture.crossOrigin = "anonymous";
-
-// var playingVideo = false;
-// window.addEventListener("click", () => {
-//   if (!playingVideo && targetFound) {
-//     video.load();
-//     video.play();
-//     playingVideo = true;
-
-//     statusText.innerText = "Selecciona un producto";
-//     setTimeout(() => {
-//       playingVideo = false;
-//     }, 36000);
-//   }
-// });
-// const plane = new THREE.Mesh(
-//   geometry,
-//   new THREE.MeshBasicMaterial({ map: texture })
-// );
+const { renderer, scene, camera } = backingMindarThree;
+const backingAnchor = backingMindarThree.addAnchor(0);
+const rollerAnchor = backingMindarThree.addAnchor("target/roller.mind");
 
 // 3D Scene
 
@@ -235,52 +211,11 @@ const loadModel = (_model) => {
       const object = gltf.scene;
       _model.object = object;
 
-      // Materials fix
-      // object.children.forEach((_child, i) => {
-      //   console.log(`child l1_${i}`, _child.name);
-      //   if (
-      //     _child.type === "Object3D" &&
-      //     (_child.name === "Top" || _child.name === "Lateral")
-      //   ) {
-      //     console.log("Object3D", _child);
-      //     _child.children.forEach((_childl2, j) => {
-      //       console.log(`child l2_${j}`, _childl2.name);
-      //       if (_childl2.type === "Group") {
-      //         _childl2.children.forEach((_mesh, k) => {
-      //           console.log(`mesh l3_${k}`, _mesh.name);
-      //           console.log("mesh", _mesh);
-      //           // _mesh.material = new THREE.MeshBasicMaterial({
-      //           //   side: THREE.DoubleSide,
-      //           // });
-      //         });
-      //       }
-      //     });
-      //   } else {
-      //     console.log(_child);
-      //   }
-      // });
-
       // Animation
 
       const animations = gltf.animations;
       if (_model.object && animations && animations.length) {
         _model.mixer = new THREE.AnimationMixer(object);
-
-        // Play animations
-        animations.forEach((clip) => {
-          const action = _model.mixer.clipAction(clip);
-          action.clampWhenFinished = true;
-          action.loop = THREE.LoopOnce;
-          action.play();
-        });
-        _model.mixer.update(0.001);
-        // Stop animations
-        animations.forEach((clip) => {
-          const action = _model.mixer.clipAction(clip);
-          action.clampWhenFinished = true;
-          action.loop = THREE.LoopOnce;
-          action.stop();
-        });
 
         // Model Button Click
         _model.button.addEventListener("click", () => {
@@ -308,7 +243,7 @@ const loadModel = (_model) => {
       );
       _model.object.scale.set(0.2, 0.2, 0.2);
 
-      anchor.group.add(_model.object);
+      backingAnchor.group.add(_model.object);
 
       // Ready
       modelsReady += 1;
@@ -326,18 +261,16 @@ const loadModel = (_model) => {
 // Lights
 const environmentLight = new THREE.AmbientLight("#FFFFFF", 3);
 scene.add(environmentLight);
+// rollerScene.add(environmentLight);
 
 // Load
 models.forEach((_model) => {
   loadModel(_model);
 });
 
-// Add 3D to anchor
-// anchor.group.add(plane);
-
 const clock = new THREE.Clock();
 const start = async () => {
-  await mindarThree.start();
+  await backingMindarThree.start();
   renderer.setAnimationLoop(() => {
     renderer.render(scene, camera);
 
@@ -349,15 +282,15 @@ const start = async () => {
         }
       });
     }
-    if (!targetFound) {
-      if (anchor.visible) {
+    if (!backingTargetFound) {
+      if (backingAnchor.visible) {
         statusText.innerText = "Selecciona un inhalador";
-        targetFound = true;
+        backingTargetFound = true;
       }
     } else {
-      if (!anchor.visible) {
+      if (!backingAnchor.visible) {
         statusText.innerText = "Mira el backing con tu cámara";
-        targetFound = false;
+        backingTargetFound = false;
       }
     }
   });
