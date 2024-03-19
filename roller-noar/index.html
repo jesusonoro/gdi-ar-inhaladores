@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+          "GLTFLoader": "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader",
+          "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js",
+          "gsap": "../gsap/index.js"
+        }
+      }
+    </script>
+    <script type="module" src="./index.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: "Courier New", Courier, monospace;
+      }
+      button {
+        font-family: "Courier New", Courier, monospace;
+      }
+      #container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+      }
+      #control {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 2;
+      }
+      #uicontrols {
+        position: fixed;
+        bottom: 1.5rem;
+        width: 100%;
+        z-index: 1000;
+      }
+      #topMenu {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 50%;
+        z-index: 1000;
+      }
+      #topMenu button {
+        width: 100%;
+        padding: 1rem;
+        border: none;
+        margin-top: 0.5rem;
+        border-radius: 1rem 0 0 1rem;
+      }
+      #uicontrols button {
+        border: none;
+        background-color: rgba(255, 255, 255, 0.8);
+        width: 100%;
+        padding: 1rem;
+      }
+      #buttons1,
+      #buttons2 {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 50% 50%;
+        grid-gap: 0.1rem;
+      }
+      #buttons2 button:last-of-type {
+        grid-column: span 2;
+      }
+      #statusText {
+        width: 100%;
+        background-color: white;
+        padding: 0.6rem;
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .light {
+        background-color: rgba(255, 255, 255, 0.3) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="video" src="./video/video 1.mp4" class="hidden"></video>
+    <div id="container"></div>
+  </body>
+</html>
