@@ -32,7 +32,7 @@ texture.format = THREE.RGBAFormat;
 texture.crossOrigin = "anonymous";
 
 var playingVideo = false;
-window.addEventListener("click", () => {
+document.addEventListener("click", () => {
   if (!playingVideo && backingTargetFound) {
     video.load();
     video.play();
